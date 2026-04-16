@@ -1,0 +1,53 @@
+<UserControl
+    x:Class="MathAnimator.InputView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Margin="20">
+
+        <TextBlock Text="Eigene Funktion"
+                   FontSize="24"
+                   Foreground="White"
+                   Margin="0 0 0 12"/>
+
+        <TextBlock Text="Funktion"/>
+        <TextBox x:Name="FormulaBox"
+                 Text="sin(x+a)*10"
+                 TextChanged="OnInputChanged"/>
+
+        <TextBlock Text="a"/>
+        <TextBox x:Name="ABox"
+                 Text="1"
+                 TextChanged="OnInputChanged"/>
+
+        <TextBlock Text="b"/>
+        <TextBox x:Name="BBox"
+                 Text="0"
+                 TextChanged="OnInputChanged"/>
+
+        <TextBlock Text="c"/>
+        <TextBox x:Name="CBox"
+                 Text="0"
+                 TextChanged="OnInputChanged"/>
+
+        <Button Content="Animieren"
+                Margin="0 10 0 0"
+                Click="OnAnimate"/>
+
+        <Button Content="Zur Bibliothek"
+                Click="OnAddToLibrary"/>
+
+        <Button Content="Zurück"
+                Click="OnBack"/>
+
+        <TextBlock x:Name="ErrorText"
+                   Foreground="Red"
+                   Margin="0 10 0 0"/>
+
+        <Image x:Name="Preview"
+               Width="600"
+               Height="300"
+               Margin="0 10 0 0"/>
+
+    </StackPanel>
+</UserControl>

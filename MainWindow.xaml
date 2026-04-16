@@ -1,0 +1,11 @@
+﻿<Window
+    x:Class="MathAnimator.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Math Animator"
+    Width="1000"
+    Height="600"
+    Background="Black">
+
+	<ContentControl x:Name="MainContent"/>
+</Window>

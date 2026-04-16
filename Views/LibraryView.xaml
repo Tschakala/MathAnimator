@@ -1,0 +1,22 @@
+<UserControl
+    x:Class="MathAnimator.LibraryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Margin="20">
+
+        <TextBlock Text="Funktionsbibliothek"
+                   FontSize="24"
+                   Foreground="White"
+                   Margin="0 0 0 10"/>
+
+        <ListBox x:Name="FunctionList"
+                 Height="300"/>
+
+        <Button Content="▶ Animieren"
+                Click="OnAnimate"/>
+
+        <Button Content="⬅ Zurück"
+                Click="OnBack"/>
+    </StackPanel>
+</UserControl>
