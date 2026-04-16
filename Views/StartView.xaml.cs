@@ -13,14 +13,14 @@ namespace MathAnimator
             _host = host;
         }
 
-        private void OnLibrary(object sender, RoutedEventArgs e)
-        {
-            _host.ShowView(new LibraryView(_host));
-        }
-
         private void OnInput(object sender, RoutedEventArgs e)
         {
             _host.ShowView(new InputView(_host));
+        }
+
+        private void OnLibrary(object sender, RoutedEventArgs e)
+        {
+            _host.ShowView(new LibraryView(_host));
         }
 
         private void OnExit(object sender, RoutedEventArgs e)

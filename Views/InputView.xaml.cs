@@ -18,10 +18,11 @@ namespace MathAnimator
     public partial class InputView : UserControl
     {
         private readonly MainWindow _host;
-
+        private bool _isInitialized = false;
 
         WriteableBitmap _bitmap;
         GraphRenderer _renderer;
+
 
 
         public InputView(MainWindow host)
@@ -29,77 +30,123 @@ namespace MathAnimator
             InitializeComponent();
             _host = host;
 
-
             _bitmap = new WriteableBitmap(
                 600, 300, 96, 96, PixelFormats.Bgra32, null);
 
             _renderer = new GraphRenderer(600, 300);
-
             Preview.Source = _bitmap;
-            Loaded += (_, _) => RenderPreview();
+
+
+            Loaded += (_, _) =>
+            {
+                _isInitialized = true;
+
+                // ✅ WICHTIG: Modus beim Start korrekt anwenden
+                UpdateModeVisibility();
+
+                RenderPreview();
+            };
+
         }
+
 
 
         private void OnAnimate(object sender, RoutedEventArgs e)
         {
             try
             {
-                string formula = FormulaBox.Text;
-
                 double a = double.Parse(ABox.Text);
                 double b = double.Parse(BBox.Text);
                 double c = double.Parse(CBox.Text);
 
-
-
-                _host.ShowView(
-                    new AnimationView(
-                        _host,
-                        formula,
-                        a,
-                        b,
-                        c
-                    )
-                );
-
-
+                if (FunctionMode.IsChecked == true)
+                {
+                    // ✅ Funktionsanimation
+                    _host.ShowView(
+                        new AnimationView(
+                            _host,
+                            GraphMode.Function,
+                            FormulaBox.Text, // <-- hier ist die Funktion
+                            "",
+                            "",
+                            a, b, c
+                        )
+                    );
+                }
+                else
+                {
+                    // ✅ Parameteranimation
+                    _host.ShowView(
+                        new AnimationView(
+                            _host,
+                            GraphMode.Parametric,
+                            "",
+                            XFormulaBox.Text,
+                            YFormulaBox.Text,
+                            a, b, c
+                        )
+                    );
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show(
-                    "Bitte alle Felder korrekt ausfüllen.",
-                    "Fehler",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                MessageBox.Show(ex.Message, "Fehler beim Animieren");
             }
         }
+
 
 
         private void OnBack(object sender, RoutedEventArgs e)
         {
-            _host.ShowView(new StartView(_host));
+            _host.GoBack();
         }
+
 
 
 
 
         void RenderPreview()
         {
-            if (_bitmap == null || _renderer == null)
+
+            if (!_isInitialized || _bitmap == null || _renderer == null)
                 return;
+
 
             try
             {
                 ErrorText.Text = "";
 
-                var func = MathParser.Parse(FormulaBox.Text);
-
                 double a = double.Parse(ABox.Text);
                 double b = double.Parse(BBox.Text);
                 double c = double.Parse(CBox.Text);
 
-                _renderer.Render(_bitmap, func, a, b, c);
+                if (FunctionMode.IsChecked == true)
+                {
+                    // 🔵 MODUS 1: Funktionsgraph
+                    var func = MathParser.Parse(FormulaBox.Text);
+
+                    _renderer.Render(
+                        _bitmap,
+                        func,
+                        a, b, c
+                    );
+                }
+                else
+                {
+                    // 🟢 MODUS 2: Parameterdarstellung
+                    var fx = MathParser.Parse(XFormulaBox.Text);
+                    var fy = MathParser.Parse(YFormulaBox.Text);
+
+                    _renderer.RenderParametric(
+                        _bitmap,
+                        fx,
+                        fy,
+                        a, b, c,
+                        -10,
+                        10,
+                        0.02
+                    );
+                }
             }
             catch (Exception ex)
             {
@@ -112,35 +159,83 @@ namespace MathAnimator
 
         private void OnAddToLibrary(object sender, RoutedEventArgs e)
         {
-
-            var func = new FunctionDefinition
+            try
             {
-                Formula = FormulaBox.Text,
-                A = double.Parse(ABox.Text),
-                B = double.Parse(BBox.Text),
-                C = double.Parse(CBox.Text)
-            };
+                var func = new FunctionDefinition
+                {
+                    A = double.Parse(ABox.Text),
+                    B = double.Parse(BBox.Text),
+                    C = double.Parse(CBox.Text)
+                };
 
+                if (FunctionMode.IsChecked == true)
+                {
+                    func.Mode = GraphMode.Function;
+                    func.Formula = FormulaBox.Text;
+                }
+                else
+                {
+                    func.Mode = GraphMode.Parametric;
+                    func.XFormula = XFormulaBox.Text;
+                    func.YFormula = YFormulaBox.Text;
+                }
 
-            var list = new List<FunctionDefinition>();
+                List<FunctionDefinition> list = new();
 
-            if (File.Exists("functions.json"))
-            {
-                list = JsonSerializer.Deserialize<List<FunctionDefinition>>(
-                    File.ReadAllText("functions.json"))!;
+                if (File.Exists("functions.json"))
+                {
+                    string json = File.ReadAllText("functions.json");
+                    if (!string.IsNullOrWhiteSpace(json))
+                        list = JsonSerializer.Deserialize<List<FunctionDefinition>>(json)!;
+                }
+
+                list.Add(func);
+
+                File.WriteAllText(
+                    "functions.json",
+                    JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true })
+                );
+
+                MessageBox.Show("Zur Bibliothek hinzugefügt!");
             }
-
-            list.Add(func);
-
-            File.WriteAllText("functions.json",
-                JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true }));
-
-            MessageBox.Show("Zur Bibliothek hinzugefügt!");
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fehler beim Speichern");
+            }
         }
 
         private void OnInputChanged(object sender, TextChangedEventArgs e)
         {
             RenderPreview();
+        }
+
+        private void OnModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (!_isInitialized)
+                return;
+
+            UpdateModeVisibility();
+            RenderPreview();
+        }
+
+
+        private void UpdateModeVisibility()
+        {
+            bool isFunction = FunctionMode.IsChecked == true;
+
+            // Funktionsfeld
+            FormulaBox.Visibility = isFunction
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            // Parametrische Felder
+            XFormulaBox.Visibility = isFunction
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+
+            YFormulaBox.Visibility = isFunction
+                ? Visibility.Collapsed
+                : Visibility.Visible;
         }
 
 

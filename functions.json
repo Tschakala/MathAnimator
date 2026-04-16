@@ -1,44 +1,29 @@
 [
   {
-    "Formula": "10 * (tanh(sin((x \u002B a) * 0.1)) \u002B 0.5 * sin((x \u002B b) * 0.05) \u002B 0.2 * cos((x \u002B c) * 5))",
-    "A": 1,
-    "B": 0,
-    "C": 20
-  },
-  {
-    "Formula": "sin(x\u002Ba)*10",
-    "A": 1,
+    "Mode": 1,
+    "Formula": "",
+    "XFormula": "cos(t)",
+    "YFormula": "sin(t)",
+    "A": 0,
     "B": 0,
     "C": 0
   },
   {
-    "Formula": "round(abs(sin((x \u002B a) * 0.01) * 20))",
-    "A": 1,
-    "B": 0,
-    "C": 0
-  },
-  {
-    "Formula": "round(abs(sin((x \u002B a) * 0.01) * 20))",
-    "A": 25,
-    "B": 0,
-    "C": 0
-  },
-  {
-    "Formula": "(3 * (tan(x) \u002B sin(a * x^2)) * cos(x))^2",
-    "A": 3,
-    "B": 10,
-    "C": 5
-  },
-  {
-    "Formula": "10 * (sin( (x\u002Ba) * 0.1 ) \u002B cos( x\u002Bb ) * 0.2 \u002B cos( (x\u002Bc) * 7 ) * 0.08)",
+    "Mode": 0,
+    "Formula": "sin(x \u002B a)",
+    "XFormula": "",
+    "YFormula": "",
     "A": 10,
     "B": 0,
     "C": 0
   },
   {
-    "Formula": "sin(x\u002Ba)*10",
-    "A": 1,
-    "B": 0,
-    "C": 0
+    "Mode": 0,
+    "Formula": "15 * (tanh(sin((x \u002B a) * 0.1)) \u002B 0.5 * sin((x \u002B b) * 0.05) \u002B 0.2 * cos((x \u002B c) * 5))",
+    "XFormula": "",
+    "YFormula": "",
+    "A": 5,
+    "B": 5,
+    "C": 5
   }
 ]

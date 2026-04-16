@@ -13,10 +13,13 @@
         <ListBox x:Name="FunctionList"
                  Height="300"/>
 
-        <Button Content="▶ Animieren"
+        <Button Content="Animieren"
+                Height="44"
                 Click="OnAnimate"/>
 
-        <Button Content="⬅ Zurück"
+        <Button Content="Zurück"
+                Height="44"
+                Background="#6C757D"
                 Click="OnBack"/>
     </StackPanel>
 </UserControl>

@@ -1,19 +1,25 @@
-
-using System;
-
 namespace MathAnimator.Model
 {
-	public class FunctionDefinition
-	{
-		public string Formula { get; set; } = "";
+    public class FunctionDefinition
+    {
+        public GraphMode Mode { get; set; }
 
-		public double A { get; set; }
-		public double B { get; set; }
-		public double C { get; set; }
+        // Für Funktionsmodus
+        public string Formula { get; set; } = "";
 
-		public override string ToString()
-		{
-			return $"{Formula} | a={A}, b={B}, c={C}";
-		}
-	}
+        // Für Parametermodus
+        public string XFormula { get; set; } = "";
+        public string YFormula { get; set; } = "";
+
+        public double A { get; set; }
+        public double B { get; set; }
+        public double C { get; set; }
+
+        public override string ToString()
+        {
+            return Mode == GraphMode.Function
+                ? $"y = {Formula}"
+                : $"x(t) = {XFormula}, y(t) = {YFormula}";
+        }
+    }
 }

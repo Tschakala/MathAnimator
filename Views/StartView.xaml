@@ -6,22 +6,27 @@
     <StackPanel
         VerticalAlignment="Center"
         HorizontalAlignment="Center"
-        Width="300">
+        Width="320">
 
         <TextBlock
             Text="Math Animator"
             Foreground="White"
             FontSize="32"
+            FontWeight="Bold"
             HorizontalAlignment="Center"
-            Margin="0 0 0 20"/>
+            Margin="0 0 0 24"/>
 
         <Button Content="Funktionsbibliothek"
+                Height="48"
                 Click="OnLibrary"/>
 
         <Button Content="Eigene Funktion eingeben"
+                Height="48"
                 Click="OnInput"/>
 
         <Button Content="Beenden"
+                Height="48"
+                Background="#D9534F"
                 Click="OnExit"/>
     </StackPanel>
 </UserControl>

@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MathAnimator.MathCore;
 using MathAnimator.Rendering;
+using MathAnimator;
 
 namespace MathAnimator
 {
@@ -13,20 +14,40 @@ namespace MathAnimator
         private readonly MainWindow _host;
         private WriteableBitmap _bitmap;
         private GraphRenderer _renderer;
-        private Func<double, double, double, double, double> _func;
+
+        private Func<double, double, double, double, double>? _func;
+        private Func<double, double, double, double, double>? _fx;
+        private Func<double, double, double, double, double>? _fy;
+
+        private double _a;
+        private double _b;
+        private double _c;
+
+        private GraphMode _mode;
+
         private AnimationController _animation;
+
+
 
 
         public AnimationView(
             MainWindow host,
+            GraphMode mode,
             string formula,
-            double aSpeed,
-            double bSpeed,
-            double cSpeed)
+            string xFormula,
+            string yFormula,
+            double a,
+            double b,
+            double c)
         {
             InitializeComponent();
 
             _host = host;
+            _mode = mode;
+
+            _a = a;
+            _b = b;
+            _c = c;
 
             int width = 900;
             int height = 500;
@@ -36,17 +57,17 @@ namespace MathAnimator
                 PixelFormats.Bgra32, null);
 
             Surface.Source = _bitmap;
-
             _renderer = new GraphRenderer(width, height);
-            _func = MathParser.Parse(formula);
 
-            // ENDLOS-ANIMATION
-            _animation = new AnimationController(
-                aSpeed,
-                bSpeed,
-                cSpeed
-            );
+            if (_mode == GraphMode.Function)
+                _func = MathParser.Parse(formula);
+            else
+            {
+                _fx = MathParser.Parse(xFormula);
+                _fy = MathParser.Parse(yFormula);
+            }
 
+            _animation = new AnimationController(_a, _b, _c);
             CompositionTarget.Rendering += OnRender;
         }
 
@@ -54,24 +75,39 @@ namespace MathAnimator
         private void OnRender(object? sender, EventArgs e)
         {
             _animation.Update();
-            _renderer.Render(_bitmap, _func, _animation.A, _animation.B, _animation.C);
+
+            double t = _animation.Time;
+            double a = _animation.A;
+            double b = _animation.B;
+            double c = _animation.C;
+
+            if (_mode == GraphMode.Function && _func != null)
+            {
+                _renderer.Render(
+                    _bitmap,
+                    _func,
+                    a, b, c
+                );
+            }
+            else if (_mode == GraphMode.Parametric && _fx != null && _fy != null)
+            {
+                _renderer.RenderParametric(
+                    _bitmap,
+                    _fx,
+                    _fy,
+                    a, b, c,
+                    0,
+                    t,
+                    0.02
+                );
+            }
         }
 
 
         private void OnBack(object sender, RoutedEventArgs e)
         {
-            // GANZ wichtig: Rendering stoppen
             CompositionTarget.Rendering -= OnRender;
-
-            // Zurück zum Startmenü
-            _host.ShowView(new StartView(_host));
-
-            this.Unloaded += (s, e) =>
-            {
-                CompositionTarget.Rendering -= OnRender;
-            };
-
+            _host.GoBack();
         }
-
     }
 }

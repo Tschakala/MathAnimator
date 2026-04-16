@@ -24,23 +24,28 @@ namespace MathAnimator.Rendering
 			_b = b;
 		}
 
-		public unsafe void Render(
-			WriteableBitmap bitmap,
-			Func<double, double, double, double, double> func,
-			double a,
-			double b,
-			double c)
-		{
-			bitmap.Lock();
-			byte* buffer = (byte*)bitmap.BackBuffer;
+        public unsafe void Render(
+            WriteableBitmap bitmap,
+            Func<double, double, double, double, double> func,
+            double a,
+            double b,
+            double c)
+        {
+            bitmap.Lock();
+            byte* buffer = (byte*)bitmap.BackBuffer;
 
-			// Bildschirm löschen
-			for (int i = 0; i < _width * _height * 4; i++)
-			{
-				buffer[i] = 0;
-			}
+            // ✅ Hintergrund schwarz
 
-            // Funktionsgraph zeichnen
+            for (int i = 0; i < _width * _height * 4; i += 4)
+            {
+                buffer[i + 0] = (byte)(buffer[i + 0] * 0.5); // B
+                buffer[i + 1] = (byte)(buffer[i + 1] * 0.5); // G
+                buffer[i + 2] = (byte)(buffer[i + 2] * 0.5); // R
+            }
+
+            // ✅ Koordinatensystem zeichnen
+            DrawAxesAndGrid(buffer);
+
             int? lastX = null;
             int? lastY = null;
 
@@ -50,28 +55,23 @@ namespace MathAnimator.Rendering
                 double y = func(worldX, a, b, c);
 
                 int py = (int)(_height / 2 - y * 10);
+
                 if (py < 0 || py >= _height)
                 {
-                    lastX = null;
-                    lastY = null;
+                    lastX = lastY = null;
                     continue;
                 }
 
-                if (lastX.HasValue && lastY.HasValue)
-                {
-                    DrawLine(buffer,
-                             lastX.Value, lastY.Value,
-                             x, py);
-                }
+                if (lastX.HasValue)
+                    DrawLine(buffer, lastX.Value, lastY!.Value, x, py);
 
                 lastX = x;
                 lastY = py;
             }
 
-            bitmap.AddDirtyRect(
-				new System.Windows.Int32Rect(0, 0, _width, _height));
-			bitmap.Unlock();
-		}
+            bitmap.AddDirtyRect(new System.Windows.Int32Rect(0, 0, _width, _height));
+            bitmap.Unlock();
+        }
 
 		private static double Map(
 			double v, double a1, double a2, double b1, double b2)
@@ -121,7 +121,112 @@ namespace MathAnimator.Rendering
                     y0 += sy;
                 }
             }
+
         }
+
+        public unsafe void RenderParametric(
+    WriteableBitmap bitmap,
+    Func<double, double, double, double, double> fx,
+    Func<double, double, double, double, double> fy,
+    double a,
+    double b,
+    double c,
+    double tStart,
+    double tEnd,
+    double tStep)
+        {
+            bitmap.Lock();
+            byte* buffer = (byte*)bitmap.BackBuffer;
+
+            for (int i = 0; i < _width * _height * 4; i++)
+                buffer[i] = 0;
+
+            // ✅ Koordinatensystem
+            DrawAxesAndGrid(buffer);
+
+            int? lastX = null;
+            int? lastY = null;
+
+            for (double t = tStart; t <= tEnd; t += tStep)
+            {
+                double xVal = fx(t, a, b, c);
+                double yVal = fy(t, a, b, c);
+
+                int px = (int)Map(xVal, -20, 20, 0, _width);
+                int py = (int)Map(yVal, -20, 20, _height, 0);
+
+                if (px < 0 || px >= _width || py < 0 || py >= _height)
+                {
+                    lastX = lastY = null;
+                    continue;
+                }
+
+                if (lastX.HasValue)
+                    DrawLine(buffer, lastX.Value, lastY!.Value, px, py);
+
+                lastX = px;
+                lastY = py;
+            }
+
+            bitmap.AddDirtyRect(new System.Windows.Int32Rect(0, 0, _width, _height));
+            bitmap.Unlock();
+        }
+
+
+        private unsafe void DrawAxesAndGrid(byte* buffer)
+        {
+            int bytesPerPixel = 4;
+
+            // Mittelpunkt (0,0)
+            int centerX = _width / 2;
+            int centerY = _height / 2;
+
+            // ✅ Gitter (alle 10 Pixel)
+            for (int x = 0; x < _width; x += 50)
+            {
+                for (int y = 0; y < _height; y++)
+                {
+                    int index = (y * _width + x) * bytesPerPixel;
+                    buffer[index + 0] = 40;   // B
+                    buffer[index + 1] = 40;   // G
+                    buffer[index + 2] = 40;   // R
+                    buffer[index + 3] = 255;
+                }
+            }
+
+            for (int y = 0; y < _height; y += 50)
+            {
+                for (int x = 0; x < _width; x++)
+                {
+                    int index = (y * _width + x) * bytesPerPixel;
+                    buffer[index + 0] = 40;
+                    buffer[index + 1] = 40;
+                    buffer[index + 2] = 40;
+                    buffer[index + 3] = 255;
+                }
+            }
+
+            // ✅ X‑Achse (weiß)
+            for (int x = 0; x < _width; x++)
+            {
+                int index = (centerY * _width + x) * bytesPerPixel;
+                buffer[index + 0] = 255;
+                buffer[index + 1] = 255;
+                buffer[index + 2] = 255;
+                buffer[index + 3] = 255;
+            }
+
+            // ✅ Y‑Achse (weiß)
+            for (int y = 0; y < _height; y++)
+            {
+                int index = (y * _width + centerX) * bytesPerPixel;
+                buffer[index + 0] = 255;
+                buffer[index + 1] = 255;
+                buffer[index + 2] = 255;
+                buffer[index + 3] = 255;
+            }
+        }
+
 
     }
 }

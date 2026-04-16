@@ -1,34 +1,61 @@
-namespace MathAnimator.Rendering
+using System;
+
+namespace MathAnimator
 {
     public class AnimationController
     {
-        private double _time;
+        // vergangene Zeit in Sekunden
+        public double Time { get; private set; }
 
-        private readonly double _aSpeed;
-        private readonly double _bSpeed;
-        private readonly double _cSpeed;
-
+        // aktuelle Werte
         public double A { get; private set; }
         public double B { get; private set; }
         public double C { get; private set; }
 
-        public AnimationController(
-            double aSpeed,
-            double bSpeed,
-            double cSpeed)
+        // Startwerte
+        private readonly double _a0;
+        private readonly double _b0;
+        private readonly double _c0;
+
+        // Änderungsraten (Einheiten pro Sekunde!)
+        private readonly double _aSpeed;
+        private readonly double _bSpeed;
+        private readonly double _cSpeed;
+
+        private DateTime _lastTime;
+
+        public AnimationController(double a, double b, double c)
         {
-            _aSpeed = aSpeed;
-            _bSpeed = bSpeed;
-            _cSpeed = cSpeed;
+            // Startwerte
+            _a0 = a;
+            _b0 = b;
+            _c0 = c;
+
+            // ✅ HIER DEFINIERST DU DIE BEDEUTUNG:
+            // a = Änderung pro Sekunde
+            _aSpeed = a;
+            _bSpeed = b;
+            _cSpeed = c;
+
+            A = a;
+            B = b;
+            C = c;
+
+            _lastTime = DateTime.Now;
         }
 
         public void Update()
         {
-            _time += 1.0 / 60.0; // Zeit läuft ~60 FPS
+            DateTime now = DateTime.Now;
+            double deltaTime = (now - _lastTime).TotalSeconds;
+            _lastTime = now;
 
-            A = _time * _aSpeed;
-            B = _time * _bSpeed;
-            C = _time * _cSpeed;
+            Time += deltaTime;
+
+            // ✅ LINEARE STEIGUNG
+            A = _a0 + _aSpeed * Time;
+            B = _b0 + _bSpeed * Time;
+            C = _c0 + _cSpeed * Time;
         }
     }
 }

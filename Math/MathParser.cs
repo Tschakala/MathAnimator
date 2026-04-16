@@ -237,6 +237,12 @@ namespace MathAnimator.MathCore
                 expr = expr[1..]; return x;
             }
 
+            if (expr.StartsWith("t"))
+            {
+                expr = expr[1..];
+                return x;
+            }
+
             if (char.IsDigit(expr[0]))
             {
                 int i = 0;
