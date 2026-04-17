@@ -14,6 +14,19 @@
 			<Button Content="Dark Theme" Click="OnDark"/>
 			<Button Content="Classic Theme" Click="OnClassic"/>
 
+			<Button Content="White Mode"
+				Height="44"
+				Click="OnWhite"/>
+
+			<Button Content="Crazy Mode"
+				Height="44"
+				Click="OnCrazy"/>
+
+			<Button Content="Eik Mode"
+				Height="44"
+				Click="OnEik"/>
+
+
 			<Button Content="Zurück" Click="OnBack"/>
 		</StackPanel>
 	</Grid>

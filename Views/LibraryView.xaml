@@ -13,14 +13,31 @@
         <ListBox x:Name="FunctionList"
                  Height="300"
                  Background="{DynamicResource ThemeBackground}"
-                 Foreground="{DynamicResource ThemeForeground}"/>
+                 Foreground="{DynamicResource ThemeForeground}"
+                 MouseDoubleClick="OnDeleteFunction"/>
+
+        <ListBox x:Name="FolderList"
+         SelectionChanged="OnFolderChanged"/>
+
+        <Button Content="Ordner erstellen"
+        Click="OnAddFolder"/>
+
+        <Button Content="Ordner umbenennen"
+        Click="OnRenameFolder"/>
+
+        <Button Content="Ordner löschen"
+        Click="OnDeleteFolder"/>
+
+        <Button Content="Funktion löschen"
+        Height="44"
+        Click="OnDeleteFunction"/>
+
         <Button Content="Animieren"
                 Height="44"
                 Click="OnAnimate"/>
 
         <Button Content="Zurück"
                 Height="44"
-                Background="{DynamicResource ThemeBackground}"
                 Click="OnBack"/>
     </StackPanel>
 </UserControl>

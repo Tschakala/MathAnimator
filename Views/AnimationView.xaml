@@ -5,18 +5,19 @@
     Focusable="True"
     KeyDown="OnKeyDown">
 
-
     <Grid>
+
         <Image x:Name="Surface"
                MouseWheel="OnMouseWheel"/>
 
+        <Canvas x:Name="AxisOverlay"
+                IsHitTestVisible="False"/>
+
         <Button Content="Zurück"
-                Width="120"
-                Height="40"
-                Margin="12"
-                Background="#6C757D"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
+                Margin="8"
                 Click="OnBack"/>
+
     </Grid>
 </UserControl>

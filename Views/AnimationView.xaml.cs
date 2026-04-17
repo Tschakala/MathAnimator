@@ -5,30 +5,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MathAnimator.MathCore;
 using MathAnimator.Rendering;
-using MathAnimator;
 
 namespace MathAnimator
 {
     public partial class AnimationView : UserControl
     {
         private readonly MainWindow _host;
-        private WriteableBitmap _bitmap;
-        private GraphRenderer _renderer;
+        private readonly WriteableBitmap _bitmap;
+        private readonly GraphRenderer _renderer;
 
-        private Func<double, double, double, double, double>? _func;
-        private Func<double, double, double, double, double>? _fx;
-        private Func<double, double, double, double, double>? _fy;
+        private readonly Func<double, double, double, double, double>? _func;
+        private readonly Func<double, double, double, double, double>? _fx;
+        private readonly Func<double, double, double, double, double>? _fy;
 
-        private double _a;
-        private double _b;
-        private double _c;
+        private readonly AnimationController _animation;
+        private readonly GraphMode _mode;
 
-        private GraphMode _mode;
-
-        private AnimationController _animation;
-
-
-
+        private DateTime _lastRender = DateTime.MinValue;
 
         public AnimationView(
             MainWindow host,
@@ -41,18 +34,10 @@ namespace MathAnimator
             double c)
         {
             InitializeComponent();
-
-            Loaded += (_, _) =>
-            {
-                Focus();
-            };
+            Loaded += (_, _) => Focus();
 
             _host = host;
             _mode = mode;
-
-            _a = a;
-            _b = b;
-            _c = c;
 
             int width = 900;
             int height = 500;
@@ -65,60 +50,74 @@ namespace MathAnimator
             _renderer = new GraphRenderer(width, height);
 
             if (_mode == GraphMode.Function)
+            {
                 _func = MathParser.Parse(formula);
+            }
             else
             {
                 _fx = MathParser.Parse(xFormula);
                 _fy = MathParser.Parse(yFormula);
             }
 
-            _animation = new AnimationController(_a, _b, _c);
+            _animation = new AnimationController(a, b, c);
             CompositionTarget.Rendering += OnRender;
         }
 
-
         private void OnRender(object? sender, EventArgs e)
         {
+            if ((DateTime.Now - _lastRender).TotalMilliseconds < 33)
+                return;
+
+            _lastRender = DateTime.Now;
             _animation.Update();
 
-            double t = _animation.Time;
-            double a = _animation.A;
-            double b = _animation.B;
-            double c = _animation.C;
+            bool crazyMode = IsCrazyMode();
 
             if (_mode == GraphMode.Function && _func != null)
             {
                 _renderer.Render(
                     _bitmap,
                     _func,
-                    a, b, c
+                    _animation.A,
+                    _animation.B,
+                    _animation.C
                 );
             }
             else if (_mode == GraphMode.Parametric && _fx != null && _fy != null)
             {
+                double tStep = crazyMode ? 0.05 : 0.02;
+
                 _renderer.RenderParametric(
                     _bitmap,
                     _fx,
                     _fy,
-                    a, b, c,
+                    _animation.A,
+                    _animation.B,
+                    _animation.C,
                     0,
-                    t,
-                    0.02
+                    _animation.Time,
+                    tStep
                 );
             }
+
+            DrawAxisLabels();
         }
+
+        private static bool IsCrazyMode()
+        {
+            return Application.Current?.Resources["ThemeAccent"] is SolidColorBrush brush
+                   && brush.Color == Colors.HotPink;
+        }
+
         private void OnMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            if (e.Delta > 0)
-            {
-                // Zoom rein
-                _renderer.Zoom(1.1);
-            }
-            else
-            {
-                // Zoom raus
-                _renderer.Zoom(0.9);
-            }
+            _renderer.Zoom(e.Delta > 0 ? 1.1 : 0.9);
+        }
+
+        private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.R)
+                _renderer.ResetZoom();
         }
 
         private void OnBack(object sender, RoutedEventArgs e)
@@ -127,13 +126,59 @@ namespace MathAnimator
             _host.GoBack();
         }
 
-        private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void DrawAxisLabels()
         {
-            if (e.Key == System.Windows.Input.Key.R)
+            AxisOverlay.Children.Clear();
+
+            double min = _renderer.WorldMin;
+            double max = _renderer.WorldMax;
+            double range = max - min;
+
+            double step = GraphRenderer.GetNiceStep(range / 100);
+
+            if (min <= 0 && max >= 0)
             {
-                _renderer.ResetZoom();
+                double yPixel = AxisOverlay.ActualHeight / 2 + 6;
+
+                for (double x = Math.Ceiling(min / step) * step; x <= max; x += step)
+                {
+                    double px = (x - min) / range * AxisOverlay.ActualWidth;
+                    if (px < 0 || px > AxisOverlay.ActualWidth) continue;
+
+                    var tb = new TextBlock
+                    {
+                        Text = x.ToString("0.##"),
+                        FontSize = 11,
+                        Foreground = Brushes.White
+                    };
+
+                    Canvas.SetLeft(tb, px + 2);
+                    Canvas.SetTop(tb, yPixel);
+                    AxisOverlay.Children.Add(tb);
+                }
+            }
+
+            if (min <= 0 && max >= 0)
+            {
+                for (double y = Math.Ceiling(min / step) * step; y <= max; y += step)
+                {
+                    double py = AxisOverlay.ActualHeight -
+                                ((y - min) / range * AxisOverlay.ActualHeight);
+
+                    if (py < 0 || py > AxisOverlay.ActualHeight) continue;
+
+                    var tb = new TextBlock
+                    {
+                        Text = y.ToString("0.##"),
+                        FontSize = 11,
+                        Foreground = Brushes.White
+                    };
+
+                    Canvas.SetLeft(tb, 4);
+                    Canvas.SetTop(tb, py - 8);
+                    AxisOverlay.Children.Add(tb);
+                }
             }
         }
-
     }
 }

@@ -155,12 +155,15 @@ namespace MathAnimator
         }
 
 
-
-
         private void OnAddToLibrary(object sender, RoutedEventArgs e)
         {
             try
             {
+                var library = LibraryStore.Load();
+
+                // vorerst immer erster Ordner
+                var folder = library.Folders[0];
+
                 var func = new FunctionDefinition
                 {
                     A = double.Parse(ABox.Text),
@@ -180,29 +183,17 @@ namespace MathAnimator
                     func.YFormula = YFormulaBox.Text;
                 }
 
-                List<FunctionDefinition> list = new();
-
-                if (File.Exists("functions.json"))
-                {
-                    string json = File.ReadAllText("functions.json");
-                    if (!string.IsNullOrWhiteSpace(json))
-                        list = JsonSerializer.Deserialize<List<FunctionDefinition>>(json)!;
-                }
-
-                list.Add(func);
-
-                File.WriteAllText(
-                    "functions.json",
-                    JsonSerializer.Serialize(list, new JsonSerializerOptions { WriteIndented = true })
-                );
+                folder.Functions.Add(func);
+                LibraryStore.Save(library);
 
                 MessageBox.Show("Zur Bibliothek hinzugefügt!");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Fehler beim Speichern");
+                MessageBox.Show(ex.Message);
             }
         }
+
 
         private void OnInputChanged(object sender, TextChangedEventArgs e)
         {
@@ -237,7 +228,5 @@ namespace MathAnimator
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         }
-
-
     }
 }
