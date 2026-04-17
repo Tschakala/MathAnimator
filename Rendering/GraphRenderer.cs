@@ -1,6 +1,7 @@
 
 using System;
 using System.Windows.Media.Imaging;
+using MathAnimator.Model;
 
 namespace MathAnimator.Rendering
 {
@@ -9,20 +10,34 @@ namespace MathAnimator.Rendering
 		private readonly int _width;
 		private readonly int _height;
 
-		private readonly byte _r;
-		private readonly byte _g;
-		private readonly byte _b;
+        private ThemeSettings Theme => AppState.Theme;
+
+        private const double DEFAULT_MIN = -20;
+        private const double DEFAULT_MAX = 20;
+
+        private double _worldMin = DEFAULT_MIN;
+        private double _worldMax = DEFAULT_MAX;
 
 
-		public GraphRenderer(int width, int height, byte r = 255, byte g = 0, byte b = 0)
-		{
-			_width = width;
-			_height = height;
 
-			_r = r;
-			_g = g;
-			_b = b;
-		}
+        public GraphRenderer(int width, int height)
+        {
+            _width = width;
+            _height = height;
+        }
+
+
+        public void Zoom(double factor)
+        {
+            double center = (_worldMin + _worldMax) / 2.0;
+            double halfRange = (_worldMax - _worldMin) / 2.0;
+
+            halfRange /= factor;
+
+            _worldMin = center - halfRange;
+            _worldMax = center + halfRange;
+        }
+
 
         public unsafe void Render(
             WriteableBitmap bitmap,
@@ -38,9 +53,11 @@ namespace MathAnimator.Rendering
 
             for (int i = 0; i < _width * _height * 4; i += 4)
             {
-                buffer[i + 0] = (byte)(buffer[i + 0] * 0.5); // B
-                buffer[i + 1] = (byte)(buffer[i + 1] * 0.5); // G
-                buffer[i + 2] = (byte)(buffer[i + 2] * 0.5); // R
+
+                buffer[i + 0] = Theme.BackgroundColor.B;
+                buffer[i + 1] = Theme.BackgroundColor.G;
+                buffer[i + 2] = Theme.BackgroundColor.R;
+                buffer[i + 3] = 255;
             }
 
             // ✅ Koordinatensystem zeichnen
@@ -51,7 +68,7 @@ namespace MathAnimator.Rendering
 
             for (int x = 0; x < _width; x++)
             {
-                double worldX = Map(x, 0, _width, -20, 20);
+                double worldX = Map(x, 0, _width, _worldMin, _worldMax);
                 double y = func(worldX, a, b, c);
 
                 int py = (int)(_height / 2 - y * 10);
@@ -92,15 +109,17 @@ namespace MathAnimator.Rendering
 
             int err = dx - dy;
 
+            var color = AppState.Theme.CurveColor;
+
             while (true)
             {
                 if (x0 >= 0 && x0 < _width && y0 >= 0 && y0 < _height)
                 {
                     int index = (y0 * _width + x0) * 4;
 
-                    buffer[index + 0] = _b;
-                    buffer[index + 1] = _g;
-                    buffer[index + 2] = _r;
+                    buffer[index + 0] = color.B;
+                    buffer[index + 1] = color.G;
+                    buffer[index + 2] = color.R;
                     buffer[index + 3] = 255;
                 }
 
@@ -121,19 +140,18 @@ namespace MathAnimator.Rendering
                     y0 += sy;
                 }
             }
-
         }
 
         public unsafe void RenderParametric(
-    WriteableBitmap bitmap,
-    Func<double, double, double, double, double> fx,
-    Func<double, double, double, double, double> fy,
-    double a,
-    double b,
-    double c,
-    double tStart,
-    double tEnd,
-    double tStep)
+            WriteableBitmap bitmap,
+            Func<double, double, double, double, double> fx,
+            Func<double, double, double, double, double> fy,
+            double a,
+            double b,
+            double c,
+            double tStart,
+            double tEnd,
+            double tStep)
         {
             bitmap.Lock();
             byte* buffer = (byte*)bitmap.BackBuffer;
@@ -152,8 +170,8 @@ namespace MathAnimator.Rendering
                 double xVal = fx(t, a, b, c);
                 double yVal = fy(t, a, b, c);
 
-                int px = (int)Map(xVal, -20, 20, 0, _width);
-                int py = (int)Map(yVal, -20, 20, _height, 0);
+                int px = (int)Map(xVal, _worldMin, _worldMax, 0, _width);
+                int py = (int)Map(yVal, _worldMin, _worldMax, _height, 0);
 
                 if (px < 0 || px >= _width || py < 0 || py >= _height)
                 {
@@ -187,9 +205,9 @@ namespace MathAnimator.Rendering
                 for (int y = 0; y < _height; y++)
                 {
                     int index = (y * _width + x) * bytesPerPixel;
-                    buffer[index + 0] = 40;   // B
-                    buffer[index + 1] = 40;   // G
-                    buffer[index + 2] = 40;   // R
+                    buffer[index + 0] = Theme.GridColor.B;
+                    buffer[index + 1] = Theme.GridColor.G;
+                    buffer[index + 2] = Theme.GridColor.R;
                     buffer[index + 3] = 255;
                 }
             }
@@ -199,9 +217,9 @@ namespace MathAnimator.Rendering
                 for (int x = 0; x < _width; x++)
                 {
                     int index = (y * _width + x) * bytesPerPixel;
-                    buffer[index + 0] = 40;
-                    buffer[index + 1] = 40;
-                    buffer[index + 2] = 40;
+                    buffer[index + 0] = Theme.GridColor.B;
+                    buffer[index + 1] = Theme.GridColor.G;
+                    buffer[index + 2] = Theme.GridColor.R;
                     buffer[index + 3] = 255;
                 }
             }
@@ -210,9 +228,9 @@ namespace MathAnimator.Rendering
             for (int x = 0; x < _width; x++)
             {
                 int index = (centerY * _width + x) * bytesPerPixel;
-                buffer[index + 0] = 255;
-                buffer[index + 1] = 255;
-                buffer[index + 2] = 255;
+                buffer[index + 0] = Theme.AxisColor.B;
+                buffer[index + 1] = Theme.AxisColor.G;
+                buffer[index + 2] = Theme.AxisColor.R;
                 buffer[index + 3] = 255;
             }
 
@@ -220,13 +238,19 @@ namespace MathAnimator.Rendering
             for (int y = 0; y < _height; y++)
             {
                 int index = (y * _width + centerX) * bytesPerPixel;
-                buffer[index + 0] = 255;
-                buffer[index + 1] = 255;
-                buffer[index + 2] = 255;
+                buffer[index + 0] = Theme.AxisColor.B;
+                buffer[index + 1] = Theme.AxisColor.G;
+                buffer[index + 2] = Theme.AxisColor.R;
                 buffer[index + 3] = 255;
             }
         }
 
+
+        public void ResetZoom()
+        {
+            _worldMin = DEFAULT_MIN;
+            _worldMax = DEFAULT_MAX;
+        }
 
     }
 }

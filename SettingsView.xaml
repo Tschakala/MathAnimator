@@ -1,0 +1,20 @@
+<UserControl x:Class="MathAnimator.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Grid Background="{DynamicResource ThemeBackground}">
+		<StackPanel Margin="20">
+
+			<TextBlock Text="Aussehen"
+                       FontSize="26"
+                       Foreground="{DynamicResource ThemeForeground}"
+                       Margin="0 0 0 20"/>
+
+			<Button Content="Neon Theme" Click="OnNeon"/>
+			<Button Content="Dark Theme" Click="OnDark"/>
+			<Button Content="Classic Theme" Click="OnClassic"/>
+
+			<Button Content="Zurück" Click="OnBack"/>
+		</StackPanel>
+	</Grid>
+</UserControl>

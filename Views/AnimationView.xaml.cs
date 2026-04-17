@@ -42,6 +42,11 @@ namespace MathAnimator
         {
             InitializeComponent();
 
+            Loaded += (_, _) =>
+            {
+                Focus();
+            };
+
             _host = host;
             _mode = mode;
 
@@ -102,12 +107,33 @@ namespace MathAnimator
                 );
             }
         }
-
+        private void OnMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                // Zoom rein
+                _renderer.Zoom(1.1);
+            }
+            else
+            {
+                // Zoom raus
+                _renderer.Zoom(0.9);
+            }
+        }
 
         private void OnBack(object sender, RoutedEventArgs e)
         {
             CompositionTarget.Rendering -= OnRender;
             _host.GoBack();
         }
+
+        private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.R)
+            {
+                _renderer.ResetZoom();
+            }
+        }
+
     }
 }

@@ -18,6 +18,11 @@ namespace MathAnimator
             _host.ShowView(new InputView(_host));
         }
 
+        private void OnSettings(object sender, RoutedEventArgs e)
+        {
+            _host.ShowView(new SettingsView(_host));
+        }
+
         private void OnLibrary(object sender, RoutedEventArgs e)
         {
             _host.ShowView(new LibraryView(_host));

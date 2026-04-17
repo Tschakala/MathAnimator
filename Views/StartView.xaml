@@ -1,32 +1,20 @@
-<UserControl
-    x:Class="MathAnimator.StartView"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<UserControl x:Class="MathAnimator.StartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <StackPanel
-        VerticalAlignment="Center"
-        HorizontalAlignment="Center"
-        Width="320">
+    <Grid Background="{DynamicResource ThemeBackground}">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="320">
 
-        <TextBlock
-            Text="Math Animator"
-            Foreground="White"
-            FontSize="32"
-            FontWeight="Bold"
-            HorizontalAlignment="Center"
-            Margin="0 0 0 24"/>
+            <TextBlock Text="Math Animator"
+                       FontSize="32"
+                       Foreground="{DynamicResource ThemeForeground}"
+                       Margin="0 0 0 24"
+                       HorizontalAlignment="Center"/>
 
-        <Button Content="Funktionsbibliothek"
-                Height="48"
-                Click="OnLibrary"/>
-
-        <Button Content="Eigene Funktion eingeben"
-                Height="48"
-                Click="OnInput"/>
-
-        <Button Content="Beenden"
-                Height="48"
-                Background="#D9534F"
-                Click="OnExit"/>
-    </StackPanel>
+            <Button Content="Funktionsbibliothek" Click="OnLibrary"/>
+            <Button Content="Eigene Funktion eingeben" Click="OnInput"/>
+            <Button Content="Einstellungen / Aussehen" Click="OnSettings"/>
+            <Button Content="Beenden" Click="OnExit"/>
+        </StackPanel>
+    </Grid>
 </UserControl>

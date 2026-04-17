@@ -5,72 +5,29 @@
 
 	<Application.Resources>
 
+		<!-- 🎨 THEME -->
+		<SolidColorBrush x:Key="ThemeBackground" Color="Black"/>
+		<SolidColorBrush x:Key="ThemeForeground" Color="White"/>
+		<SolidColorBrush x:Key="ThemeAccent" Color="#3A7AFE"/>
+		<SolidColorBrush x:Key="ThemeAccentHover" Color="#2F65D9"/>
+		<SolidColorBrush x:Key="ThemeAccentPressed" Color="#244EB0"/>
+		<SolidColorBrush x:Key="ThemeDisabled" Color="#AAAAAA"/>
 
-		<Style TargetType="TextBox">
-			<Setter Property="FontSize" Value="16"/>
-			<Setter Property="Padding" Value="10"/>
-			<Setter Property="Height" Value="40"/>
-			<Setter Property="Margin" Value="0,6,0,6"/>
-			<Setter Property="BorderThickness" Value="1"/>
-			<Setter Property="BorderBrush" Value="#888"/>
-			<Setter Property="Background" Value="White"/>
-		</Style>
+		<!-- 🔲 BUTTON -->
 
-		<Style TargetType="ListBox">
-			<Setter Property="FontSize" Value="15"/>
-		</Style>
-
-		<Style TargetType="RadioButton">
-			<Setter Property="Foreground" Value="White"/>
-			<Setter Property="FontSize" Value="16"/>
-			<Setter Property="Margin" Value="0,4,0,4"/>
-			<Setter Property="Cursor" Value="Hand"/>
-
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="RadioButton">
-						<StackPanel Orientation="Horizontal"
-									VerticalAlignment="Center">
-
-							<Ellipse x:Name="Circle"
-									 Width="18"
-									 Height="18"
-									 Stroke="White"
-									 StrokeThickness="2"
-									 Margin="0,0,10,0"/>
-
-							<ContentPresenter VerticalAlignment="Center"/>
-						</StackPanel>
-
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsChecked" Value="True">
-								<Setter TargetName="Circle"
-										Property="Fill"
-										Value="#3A7AFE"/>
-							</Trigger>
-
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter TargetName="Circle"
-										Property="Stroke"
-										Value="#3A7AFE"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
-		<Style TargetType="ListBoxItem">
-			<Setter Property="Padding" Value="10"/>
-		</Style>
 
 		<Style TargetType="Button">
+			<!-- 🎯 FESTE GRÖSSE -->
+			<Setter Property="MinHeight" Value="48"/>
+			<Setter Property="Padding" Value="18,10"/>
+
 			<Setter Property="FontSize" Value="16"/>
 			<Setter Property="FontWeight" Value="SemiBold"/>
-			<Setter Property="Padding" Value="16,8"/>
 			<Setter Property="Margin" Value="0,8,0,0"/>
-			<Setter Property="Background" Value="#3A7AFE"/>
-			<Setter Property="Foreground" Value="White"/>
+
+			<!-- 🎨 Theme -->
+			<Setter Property="Background" Value="{DynamicResource ThemeAccent}"/>
+			<Setter Property="Foreground" Value="{DynamicResource ThemeForeground}"/>
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="Cursor" Value="Hand"/>
 
@@ -79,43 +36,67 @@
 					<ControlTemplate TargetType="Button">
 						<Border x:Name="Border"
 								Background="{TemplateBinding Background}"
-								CornerRadius="10"
-								SnapsToDevicePixels="True">
+								CornerRadius="8">
+							<!-- 🔴 klar sichtbar rund -->
 							<ContentPresenter
 								HorizontalAlignment="Center"
-								VerticalAlignment="Center"
-								RecognizesAccessKey="True"/>
+								VerticalAlignment="Center"/>
 						</Border>
 
 						<ControlTemplate.Triggers>
-
-							<!-- Hover -->
 							<Trigger Property="IsMouseOver" Value="True">
 								<Setter TargetName="Border"
 										Property="Background"
-										Value="#2F65D9"/>
+										Value="{DynamicResource ThemeAccentHover}"/>
 							</Trigger>
-
-							<!-- Gedrückt -->
 							<Trigger Property="IsPressed" Value="True">
 								<Setter TargetName="Border"
 										Property="Background"
-										Value="#244EB0"/>
+										Value="{DynamicResource ThemeAccentPressed}"/>
 							</Trigger>
-
-							<!-- Deaktiviert -->
-							<Trigger Property="IsEnabled" Value="False">
-								<Setter TargetName="Border"
-										Property="Background"
-										Value="#AAAAAA"/>
-							</Trigger>
-
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
 		</Style>
 
-	</Application.Resources>
 
+		<!-- 📦 TEXTBOX -->
+		<Style TargetType="TextBox">
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="Padding" Value="10,6"/>
+			<Setter Property="MinHeight" Value="36"/>
+			<Setter Property="Margin" Value="0,6,0,6"/>
+
+			<!-- 🔒 WICHTIG: KEIN SCROLLEN -->
+			<Setter Property="AcceptsReturn" Value="False"/>
+			<Setter Property="TextWrapping" Value="NoWrap"/>
+			<Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+			<Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BorderBrush" Value="#555"/>
+
+			<!-- 🎨 Theme -->
+			<Setter Property="Background" Value="{DynamicResource ThemeBackground}"/>
+			<Setter Property="Foreground" Value="{DynamicResource ThemeForeground}"/>
+		</Style>
+
+
+
+		<Style TargetType="ListBox">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Padding" Value="6"/>
+
+			<!-- Dezenter Rahmen -->
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="BorderBrush" Value="#555"/>
+
+			<!-- Theme -->
+			<Setter Property="Background" Value="{DynamicResource ThemeBackground}"/>
+			<Setter Property="Foreground" Value="{DynamicResource ThemeForeground}"/>
+		</Style>
+
+
+	</Application.Resources>
 </Application>
