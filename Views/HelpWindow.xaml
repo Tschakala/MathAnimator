@@ -311,7 +311,19 @@
                     <TextBlock Margin="0 8 0 0">
                         <Hyperlink NavigateUri="https://github.com/Tschakala"
                                    RequestNavigate="OnOpenLink">
-                            https://github.com/Tschakala
+                            • Mein Github: https://github.com/Tschakala
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="0 8 0 0">
+                        <Hyperlink NavigateUri="https://github.com/Tschakala/MathAnimator"
+                                   RequestNavigate="OnOpenLink">
+                            • GitHub Repository: https://github.com/Tschakala/MathAnimator
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="0 8 0 0">
+                        <Hyperlink NavigateUri="https://github.com/Tschakala/Terme"
+                                   RequestNavigate="OnOpenLink">
+                            • GitHub Repository des Prototyps: https://github.com/Tschakala/Terme
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>
