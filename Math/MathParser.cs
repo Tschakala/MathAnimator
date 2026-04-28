@@ -1,11 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq.Expressions;
 
 namespace MathAnimator.MathCore
 {
-
     public static class MathParser
     {
         public static bool UseDegrees { get; set; } = false;
@@ -19,7 +17,6 @@ namespace MathAnimator.MathCore
                 return min + rng.NextDouble() * (max - min);
             }
         }
-
 
         private static Expression ParseRandom(ref string expr, ParameterExpression x, ParameterExpression a, ParameterExpression b, ParameterExpression c)
         {
@@ -82,12 +79,10 @@ namespace MathAnimator.MathCore
             return Expression.Lambda<Func<double, double, double, double, double>>(body, xParam, aParam, bParam, cParam).Compile();
         }
 
-
         private static Expression ParseExpression(string expr, ParameterExpression x, ParameterExpression a, ParameterExpression b, ParameterExpression c)
         {
             return ParseAddSubtract(ref expr, x, a, b, c);
         }
-
 
         private static Expression ParseAddSubtract(ref string expr, ParameterExpression x, ParameterExpression a, ParameterExpression b, ParameterExpression c)
         {
@@ -111,7 +106,6 @@ namespace MathAnimator.MathCore
             return left;
         }
 
-
         private static Expression ParseMultiplyDivide(ref string expr, ParameterExpression x, ParameterExpression a, ParameterExpression b, ParameterExpression c)
         {
             var left = ParsePower(ref expr, x, a, b, c);
@@ -134,7 +128,6 @@ namespace MathAnimator.MathCore
             return left;
         }
 
-
         private static Expression ParsePower(ref string expr, ParameterExpression x, ParameterExpression a, ParameterExpression b, ParameterExpression c)
         {
             var left = ParseAtom(ref expr, x, a, b, c);
@@ -150,7 +143,6 @@ namespace MathAnimator.MathCore
         private static Expression ParseAtom(ref string expr, ParameterExpression x, ParameterExpression a, ParameterExpression b, ParameterExpression c)
         {
 
-
             if (expr.StartsWith("pi"))
             {
                 expr = expr[2..];
@@ -162,7 +154,6 @@ namespace MathAnimator.MathCore
                 expr = expr[1..];
                 return Expression.Constant(Math.PI);
             }
-
 
             if (expr.StartsWith("tau"))
             {
@@ -224,14 +215,17 @@ namespace MathAnimator.MathCore
             {
                 expr = expr[1..]; return a;
             }
+
             if (expr.StartsWith("b"))
             {
                 expr = expr[1..]; return b;
             }
+
             if (expr.StartsWith("c"))
             {
                 expr = expr[1..]; return c;
             }
+
             if (expr.StartsWith("x"))
             {
                 expr = expr[1..]; return x;
@@ -264,8 +258,6 @@ namespace MathAnimator.MathCore
 
             throw new Exception("Unbekannter Ausdruck: " + expr);
         }
-
-
 
         private static Expression ParseTwoArgs(ref string expr, ParameterExpression x, ParameterExpression a, ParameterExpression b, ParameterExpression c, string func)
         {
@@ -307,7 +299,6 @@ namespace MathAnimator.MathCore
 
             return func switch
             {
-
                 "sin" => Expression.Call(typeof(Math).GetMethod("Sin")!, MathParser.UseDegrees ? Expression.Multiply(inside, Expression.Constant(Math.PI / 180)) : inside),
                 "cos" => Expression.Call(typeof(Math).GetMethod("Cos")!, MathParser.UseDegrees ? Expression.Multiply(inside, Expression.Constant(Math.PI / 180)) : inside),
                 "tan" => Expression.Call(typeof(Math).GetMethod("Tan")!, MathParser.UseDegrees ? Expression.Multiply(inside, Expression.Constant(Math.PI / 180)) : inside),

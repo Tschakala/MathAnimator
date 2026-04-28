@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,8 +9,7 @@ using System.Windows.Media.Imaging;
 using MathAnimator.Model;
 using MathAnimator.MathCore;
 using MathAnimator.Rendering;
-
-
+using System.Linq;
 
 namespace MathAnimator
 {
@@ -22,8 +20,6 @@ namespace MathAnimator
 
         WriteableBitmap _bitmap;
         GraphRenderer _renderer;
-
-
 
         public InputView(MainWindow host)
         {
@@ -36,20 +32,14 @@ namespace MathAnimator
             _renderer = new GraphRenderer(600, 300);
             Preview.Source = _bitmap;
 
-
             Loaded += (_, _) =>
             {
                 _isInitialized = true;
-
-                // ✅ WICHTIG: Modus beim Start korrekt anwenden
                 UpdateModeVisibility();
-
+                LoadFolders();
                 RenderPreview();
             };
-
         }
-
-
 
         private void OnAnimate(object sender, RoutedEventArgs e)
         {
@@ -61,12 +51,11 @@ namespace MathAnimator
 
                 if (FunctionMode.IsChecked == true)
                 {
-                    // ✅ Funktionsanimation
                     _host.ShowView(
                         new AnimationView(
                             _host,
                             GraphMode.Function,
-                            FormulaBox.Text, // <-- hier ist die Funktion
+                            FormulaBox.Text,
                             "",
                             "",
                             a, b, c
@@ -75,7 +64,6 @@ namespace MathAnimator
                 }
                 else
                 {
-                    // ✅ Parameteranimation
                     _host.ShowView(
                         new AnimationView(
                             _host,
@@ -94,23 +82,16 @@ namespace MathAnimator
             }
         }
 
-
-
         private void OnBack(object sender, RoutedEventArgs e)
         {
             _host.GoBack();
         }
-
-
-
-
 
         void RenderPreview()
         {
 
             if (!_isInitialized || _bitmap == null || _renderer == null)
                 return;
-
 
             try
             {
@@ -122,7 +103,6 @@ namespace MathAnimator
 
                 if (FunctionMode.IsChecked == true)
                 {
-                    // 🔵 MODUS 1: Funktionsgraph
                     var func = MathParser.Parse(FormulaBox.Text);
 
                     _renderer.Render(
@@ -133,7 +113,6 @@ namespace MathAnimator
                 }
                 else
                 {
-                    // 🟢 MODUS 2: Parameterdarstellung
                     var fx = MathParser.Parse(XFormulaBox.Text);
                     var fy = MathParser.Parse(YFormulaBox.Text);
 
@@ -154,15 +133,28 @@ namespace MathAnimator
             }
         }
 
-
         private void OnAddToLibrary(object sender, RoutedEventArgs e)
         {
             try
             {
+                if (FolderBox.SelectedItem is not LibraryFolder uiFolder)
+                {
+                    MessageBox.Show("Bitte einen Ordner auswählen.");
+                    return;
+                }
+
+                string selectedFolderName = uiFolder.Name;
+
                 var library = LibraryStore.Load();
 
-                // vorerst immer erster Ordner
-                var folder = library.Folders[0];
+                var targetFolder = library.Folders
+                    .FirstOrDefault(f => f.Name == selectedFolderName);
+
+                if (targetFolder == null)
+                {
+                    MessageBox.Show("Der ausgewählte Ordner existiert nicht mehr.");
+                    return;
+                }
 
                 var func = new FunctionDefinition
                 {
@@ -183,17 +175,17 @@ namespace MathAnimator
                     func.YFormula = YFormulaBox.Text;
                 }
 
-                folder.Functions.Add(func);
+                targetFolder.Functions.Add(func);
+
                 LibraryStore.Save(library);
 
-                MessageBox.Show("Zur Bibliothek hinzugefügt!");
+                MessageBox.Show($"Funktion wurde zu „{selectedFolderName}“ hinzugefügt.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, "Fehler");
             }
         }
-
 
         private void OnInputChanged(object sender, TextChangedEventArgs e)
         {
@@ -209,17 +201,21 @@ namespace MathAnimator
             RenderPreview();
         }
 
+        private void LoadFolders()
+        {
+            var library = LibraryStore.Load();
+            FolderBox.ItemsSource = library.Folders;
+            FolderBox.SelectedIndex = 0;
+        }
 
         private void UpdateModeVisibility()
         {
             bool isFunction = FunctionMode.IsChecked == true;
 
-            // Funktionsfeld
             FormulaBox.Visibility = isFunction
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
-            // Parametrische Felder
             XFormulaBox.Visibility = isFunction
                 ? Visibility.Collapsed
                 : Visibility.Visible;

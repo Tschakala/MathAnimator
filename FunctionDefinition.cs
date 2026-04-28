@@ -4,10 +4,8 @@ namespace MathAnimator.Model
     {
         public GraphMode Mode { get; set; }
 
-        // Für Funktionsmodus
         public string Formula { get; set; } = "";
 
-        // Für Parametermodus
         public string XFormula { get; set; } = "";
         public string YFormula { get; set; } = "";
 
@@ -17,9 +15,11 @@ namespace MathAnimator.Model
 
         public override string ToString()
         {
+            string paramsText = $"a = {A}, b = {B}, c = {C}";
+
             return Mode == GraphMode.Function
-                ? $"y = {Formula}"
-                : $"x(t) = {XFormula}, y(t) = {YFormula}";
+                ? $"y = {Formula}   |   {paramsText}"
+                : $"x(t) = {XFormula}, y(t) = {YFormula}   |   {paramsText}";
         }
     }
 }

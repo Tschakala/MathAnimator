@@ -6,7 +6,6 @@
     KeyDown="OnKeyDown">
 
     <Grid>
-
         <Image x:Name="Surface"
                MouseWheel="OnMouseWheel"/>
 
@@ -18,6 +17,5 @@
                 VerticalAlignment="Top"
                 Margin="8"
                 Click="OnBack"/>
-
     </Grid>
 </UserControl>

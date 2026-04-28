@@ -12,7 +12,6 @@ namespace _2d_admination
         double _c;
         int _frames;
 
-
         public Function(string formula, double a, double b, double c, int frames)
         {
             _formula = formula;
@@ -21,26 +20,32 @@ namespace _2d_admination
             _c = c;
             _frames = frames;
         }
+
         public string getformula()
         {
             return _formula;
         }
+
         public double geta()
         {
             return _a;
         }
+
         public double getb()
         {
             return _b;
         }
+
         public double getc()
         {
             return _c;
         }
+
         public int getframes()
         {
             return _frames;
         }
+
         public override string ToString()
         {
             if (_a != 0 && _b != 0 && _c != 0)
@@ -57,7 +62,5 @@ namespace _2d_admination
             }
             return _formula + "\n\tFrames: " + _frames;
         }
-
-
     }
 }

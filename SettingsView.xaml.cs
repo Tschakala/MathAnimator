@@ -84,9 +84,6 @@ namespace MathAnimator
 
             Application.Current.Resources["ThemeDisabled"] =
                 new SolidColorBrush(Colors.Gray);
-
-            // ⚠️ Curve-Farbe wird NICHT statisch gesetzt
-            // -> kommt aus dem Renderer (Regenbogen!)
         }
 
         private void OnEik(object sender, RoutedEventArgs e)

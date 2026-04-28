@@ -21,39 +21,17 @@ namespace MathAnimator
             _library = LibraryStore.Load();
 
             FolderList.ItemsSource = _library.Folders;
-            FolderList.SelectedIndex = 0;
+            MoveTargetFolder.ItemsSource = _library.Folders;
 
-            try
+            if (_library.Folders.Count > 0)
             {
-                if (File.Exists("functions.json"))
-                {
-                    string json = File.ReadAllText("functions.json");
+                _selectedFolder = _library.Folders[0];
+                FolderList.SelectedItem = _selectedFolder;
+                FunctionList.ItemsSource = _selectedFolder.Functions;
 
-                    if (!string.IsNullOrWhiteSpace(json))
-                    {
-                        FunctionList.ItemsSource =
-                            JsonSerializer.Deserialize<List<FunctionDefinition>>(json);
-                    }
-                    else
-                    {
-                        FunctionList.ItemsSource = new List<FunctionDefinition>();
-                    }
-                }
-                else
-                {
-                    FunctionList.ItemsSource = new List<FunctionDefinition>();
-                }
+                MoveTargetFolder.SelectedItem = _selectedFolder;
             }
-            catch
-            {
-                // Falls alte / kaputte JSON-Datei existiert
-                File.Delete("functions.json");
-                FunctionList.ItemsSource = new List<FunctionDefinition>();
-            }
-
-
         }
-
 
         private void OnAnimate(object sender, RoutedEventArgs e)
         {
@@ -74,8 +52,6 @@ namespace MathAnimator
             }
         }
 
-
-
         private void OnBack(object sender, RoutedEventArgs e)
         {
             _host.GoBack();
@@ -84,7 +60,13 @@ namespace MathAnimator
         private void OnFolderChanged(object sender, SelectionChangedEventArgs e)
         {
             _selectedFolder = FolderList.SelectedItem as LibraryFolder;
-            FunctionList.ItemsSource = _selectedFolder?.Functions;
+
+            if (_selectedFolder == null)
+                return;
+
+            FunctionList.ItemsSource = _selectedFolder.Functions;
+
+            MoveTargetFolder.SelectedItem = _selectedFolder;
         }
 
         private void OnAddFolder(object sender, RoutedEventArgs e)
@@ -133,7 +115,6 @@ namespace MathAnimator
             FolderList.SelectedIndex = 0;
         }
 
-
         private void OnDeleteFunction(object sender, RoutedEventArgs e)
         {
             if (_selectedFolder == null)
@@ -152,11 +133,43 @@ namespace MathAnimator
                 return;
 
             _selectedFolder.Functions.Remove(func);
-
             LibraryStore.Save(_library);
 
             FunctionList.Items.Refresh();
         }
 
+        private void OnMoveFunction(object sender, RoutedEventArgs e)
+        {
+            if (_selectedFolder == null)
+                return;
+
+            if (FunctionList.SelectedItem is not FunctionDefinition func)
+            {
+                MessageBox.Show("Bitte eine Funktion auswählen.");
+                return;
+            }
+
+            if (MoveTargetFolder.SelectedItem is not LibraryFolder targetFolder)
+            {
+                MessageBox.Show("Bitte Zielordner auswählen.");
+                return;
+            }
+
+            if (targetFolder == _selectedFolder)
+            {
+                MessageBox.Show("Quelle und Ziel sind identisch.");
+                return;
+            }
+
+            _selectedFolder.Functions.Remove(func);
+            targetFolder.Functions.Add(func);
+
+            LibraryStore.Save(_library);
+
+            FunctionList.Items.Refresh();
+
+            MessageBox.Show(
+                $"Funktion nach „{targetFolder.Name}“ verschoben.");
+        }
     }
 }

@@ -96,7 +96,6 @@ namespace MathAnimator.Rendering
                 double worldX = Map(x, 0, _width, _worldMin, _worldMax);
                 double y = func(worldX, a, b, c);
 
-                // ✅ ONLY REAL FIX
                 int py = (int)Map(y, _worldMin, _worldMax, _height, 0);
 
                 if (py < 0 || py >= _height)

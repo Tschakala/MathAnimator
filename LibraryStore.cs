@@ -29,7 +29,6 @@ namespace MathAnimator
             }
             catch
             {
-                // Falls Datei kaputt ist
                 return new LibraryData
                 {
                     Folders =

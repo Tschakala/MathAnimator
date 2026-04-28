@@ -32,5 +32,11 @@ namespace MathAnimator
         {
             Application.Current.Shutdown();
         }
+
+        private void OnHelp(object sender, RoutedEventArgs e)
+        {
+            var window = new HelpWindow(Application.Current.MainWindow);
+            window.ShowDialog();
+        }
     }
 }

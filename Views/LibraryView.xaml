@@ -17,20 +17,28 @@
                  MouseDoubleClick="OnDeleteFunction"/>
 
         <ListBox x:Name="FolderList"
-         SelectionChanged="OnFolderChanged"/>
+            SelectionChanged="OnFolderChanged"/>
 
         <Button Content="Ordner erstellen"
-        Click="OnAddFolder"/>
+            Click="OnAddFolder"/>
 
         <Button Content="Ordner umbenennen"
-        Click="OnRenameFolder"/>
+            Click="OnRenameFolder"/>
+
+        <TextBlock Text="Funktion verschieben nach:"/>
+
+        <ComboBox x:Name="MoveTargetFolder"
+            Height="32"/>
+
+        <Button Content="Funktion verschieben"
+            Click="OnMoveFunction"/>
 
         <Button Content="Ordner löschen"
-        Click="OnDeleteFolder"/>
+            Click="OnDeleteFolder"/>
 
         <Button Content="Funktion löschen"
-        Height="44"
-        Click="OnDeleteFunction"/>
+            Height="44"
+            Click="OnDeleteFunction"/>
 
         <Button Content="Animieren"
                 Height="44"

@@ -3,18 +3,30 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid Background="{DynamicResource ThemeBackground}">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="320">
+        <StackPanel VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Width="320">
 
             <TextBlock Text="Math Animator"
-                       FontSize="32"
-                       Foreground="{DynamicResource ThemeForeground}"
-                       Margin="0 0 0 24"
-                       HorizontalAlignment="Center"/>
+               FontSize="32"
+               Foreground="{DynamicResource ThemeForeground}"
+               Margin="0 0 0 24"
+               HorizontalAlignment="Center"/>
 
-            <Button Content="Funktionsbibliothek" Click="OnLibrary"/>
-            <Button Content="Eigene Funktion eingeben" Click="OnInput"/>
-            <Button Content="Einstellungen / Aussehen" Click="OnSettings"/>
-            <Button Content="Beenden" Click="OnExit"/>
+            <Button Content="Funktionsbibliothek"
+                Click="OnLibrary"/>
+
+            <Button Content="Eigene Funktion eingeben"
+                Click="OnInput"/>
+
+            <Button Content="Hilfe &amp; Informationen"
+                Click="OnHelp"/>
+
+            <Button Content="Einstellungen / Aussehen"
+                Click="OnSettings"/>
+
+            <Button Content="Beenden"
+                Click="OnExit"/>
         </StackPanel>
     </Grid>
 </UserControl>
