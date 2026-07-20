@@ -1,5 +1,6 @@
 # Math Animator
 
+[![License: ISC](https://img.shields.io/badge/License-ISC-yellow.svg)](https://opensource.org/licenses/ISC)
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg)
 ![UI](https://img.shields.io/badge/UI-WPF-0C54C2.svg)
