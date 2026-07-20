@@ -25,6 +25,7 @@ Visualize and animate mathematical functions in real time with a custom expressi
 - [Project Structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
 - [Technical Notes](#technical-notes)
+- [License](#license)
 - [Author](#author)
 
 ---
@@ -230,6 +231,12 @@ MathAnimator/
 
 ---
 
+## License
+
+ISC License
+
+---
+
 ## Author
 
 **Tschakala / Raffael**
@@ -240,3 +247,6 @@ MathAnimator/
 
 **Note:** The application UI is primarily in German.
 
+<div align="center">
+  <strong>Made with ❤️ in Austria</strong>
+</div>
